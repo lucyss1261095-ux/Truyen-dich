@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1f6f5c"/>
+  <text x="256" y="300" font-size="250" text-anchor="middle" fill="#ffffff" font-family="serif">譯</text>
+  <rect x="96" y="352" width="320" height="14" rx="7" fill="#ffffff" opacity=".85"/>
+  <rect x="96" y="384" width="220" height="14" rx="7" fill="#ffffff" opacity=".55"/>
+</svg>

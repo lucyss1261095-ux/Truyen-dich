@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6f5c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<title>Truyện Dịch</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Truyện Dịch</h1>
+  <span id="stats"></span>
+</header>
+
+<main>
+  <!-- ===== TAB DỊCH ===== -->
+  <section id="tab-translate" class="tab active">
+    <div class="seg">
+      <button id="seg-src" class="on" type="button">Văn bản gốc</button>
+      <button id="seg-out" type="button">Bản dịch</button>
+    </div>
+
+    <div id="pane-src" class="pane">
+      <div class="row">
+        <button id="btn-paste" type="button">Dán</button>
+        <button id="btn-open" type="button">Mở file .txt</button>
+        <button id="btn-clear" type="button">Xóa</button>
+        <select id="sel-lang" title="Ngôn ngữ gốc">
+          <option value="auto">Tự nhận diện</option>
+          <option value="zh">Tiếng Trung</option>
+          <option value="en">Tiếng Anh</option>
+        </select>
+      </div>
+      <div class="row">
+        <input id="url-in" class="grow" type="url" inputmode="url" placeholder="Dán link trang truyện để dịch..." autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button id="btn-url" type="button">Tải link</button>
+      </div>
+      <textarea id="src" placeholder="Dán hoặc mở truyện tiếng Trung / tiếng Anh ở đây. Nên dịch từng chương cho nhanh."></textarea>
+      <div id="hint" class="hint" hidden>
+        Chưa có từ điển. Vào tab <b>Từ điển</b> để nạp file của Quick Translator (Names.txt, VietPhrase.txt, ChinesePhienAmWords.txt) hoặc bấm “Nạp từ điển mẫu” để thử.
+      </div>
+      <button id="btn-go" class="primary" type="button">Dịch</button>
+      <div id="prog" class="prog"></div>
+    </div>
+
+    <div id="pane-out" class="pane" hidden>
+      <div class="row">
+        <button id="btn-copy" type="button">Chép</button>
+        <button id="btn-share" type="button">Chia sẻ / Lưu</button>
+        <button id="btn-minus" type="button" aria-label="Giảm cỡ chữ">A−</button>
+        <button id="btn-plus" type="button" aria-label="Tăng cỡ chữ">A+</button>
+        <label class="chk"><input id="chk-spaced" type="checkbox"> Cách dòng</label>
+      </div>
+      <div class="row opts">
+        <select id="sel-mode" title="Kiểu dịch">
+          <option value="vp">VietPhrase</option>
+          <option value="hv">Hán-Việt</option>
+        </select>
+        <label class="chk"><input id="chk-rules" type="checkbox" checked> Luật nhân</label>
+        <label class="chk"><input id="chk-multi" type="checkbox"> Nhiều nghĩa</label>
+      </div>
+      <div id="book-nav" class="row" hidden>
+        <button id="chap-prev" type="button">◀ Trước</button>
+        <span id="chap-label" class="chap-label"></span>
+        <button id="chap-next" type="button">Sau ▶</button>
+      </div>
+      <div class="row">
+        <button id="btn-ai" class="primary" type="button">Tối ưu bằng AI</button>
+        <button id="btn-ai-stop" type="button" hidden>Dừng</button>
+        <button id="mode-dict" class="mode on" type="button">Bản từ điển</button>
+        <button id="mode-ai" class="mode" type="button">Bản AI</button>
+      </div>
+      <div id="ai-prog" class="prog"></div>
+      <div id="out" class="out" aria-live="polite"></div>
+      <div id="tip-out" class="tip">Chạm vào một từ để xem chữ gốc, nghĩa khác và sửa nghĩa.</div>
+    </div>
+  </section>
+
+  <!-- ===== TAB AI ===== -->
+  <section id="tab-ai" class="tab">
+    <p class="note">Tùy chọn, cần mạng. AI đọc văn bản gốc + bản dịch từ điển + tên riêng rồi viết lại cho tự nhiên. Văn bản của bạn sẽ được gửi tới nhà cung cấp bạn chọn.</p>
+    <label class="field"><span>Nhà cung cấp</span>
+      <select id="ai-preset">
+        <option value="openai">Tương thích OpenAI (FurAI hoặc nhà cung cấp khác)</option>
+        <option value="gemini">Google Gemini</option>
+      </select>
+    </label>
+    <label class="field" id="ai-base-wrap"><span>Base URL (vd: https://api.example.com/v1)</span>
+      <input id="ai-base" placeholder="https://.../v1" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </label>
+    <label class="field"><span>API key</span>
+      <input id="ai-key" type="password" placeholder="Khóa API" autocomplete="off">
+    </label>
+    <label class="field"><span>Tên model</span>
+      <input id="ai-model" placeholder="Tên model" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </label>
+    <label class="field"><span>Thể loại truyện</span>
+      <select id="ai-genre">
+        <option value="tienhiep">Tiên hiệp / huyền huyễn</option>
+        <option value="ngontinh">Ngôn tình</option>
+        <option value="dothi">Đô thị</option>
+        <option value="khac">Khác</option>
+      </select>
+    </label>
+    <div class="row">
+      <button id="ai-test" class="primary" type="button">Kiểm tra kết nối</button>
+    </div>
+    <div class="tip">API key được lưu ngay trong máy bạn, không gửi đi đâu ngoài nhà cung cấp AI đã chọn. Mỗi lần tối ưu sẽ tốn lượt gọi/chi phí theo gói của nhà cung cấp.</div>
+  </section>
+
+  <!-- ===== TAB TRUYỆN ===== -->
+  <section id="tab-books" class="tab">
+    <div id="book-home">
+      <p class="note">Nhập file .txt lớn (hàng chục MB). App tự tách chương, bạn đọc/dịch từng chương, hoặc dịch cả truyện ra file. Truyện được lưu trong máy.</p>
+      <div class="row"><button id="btn-book-import" class="primary" type="button">Nhập truyện (.txt)</button></div>
+      <div id="book-status" class="hint" hidden></div>
+      <ul id="book-list" class="dict-list"></ul>
+    </div>
+    <div id="book-view" hidden>
+      <div class="row">
+        <button id="btn-book-back" type="button">◀ Danh sách</button>
+        <button id="btn-book-export" class="primary" type="button">Dịch cả truyện ra file</button>
+        <button id="btn-book-stop" type="button" hidden>Dừng</button>
+      </div>
+      <div id="book-title" class="book-title"></div>
+      <div class="quick">
+        <input id="book-goto" type="number" inputmode="numeric" min="1" placeholder="Tới chương số">
+        <button id="btn-book-goto" type="button">Đi</button>
+      </div>
+      <div id="book-prog" class="prog"></div>
+      <ul id="chap-list" class="dict-list"></ul>
+      <button id="btn-chap-more" type="button" hidden>Hiện thêm</button>
+    </div>
+  </section>
+
+  <!-- ===== TAB TỪ ĐIỂN ===== -->
+  <section id="tab-dict" class="tab">
+    <p class="note">Nạp từ điển dạng <code>gốc=nghĩa</code> (mỗi dòng một mục). Dùng được trực tiếp các file của Quick Translator. Từ điển được lưu trong máy, dùng offline.</p>
+    <div class="row">
+      <select id="sel-type">
+        <option value="auto">Tự nhận diện theo tên file</option>
+        <option value="names">Tên riêng (Names)</option>
+        <option value="phrases">Cụm từ (VietPhrase)</option>
+        <option value="hanviet">Hán-Việt (PhienAm)</option>
+        <option value="en">Anh-Việt</option>
+        <option value="rules">Luật nhân (LuatNhan)</option>
+      </select>
+    </div>
+    <div class="row">
+      <button id="btn-import" class="primary" type="button">Thêm file (.txt / .zip)</button>
+      <button id="btn-sample" type="button">Nạp từ điển mẫu</button>
+    </div>
+    <div class="row">
+      <input id="dict-url" class="grow" type="url" inputmode="url" placeholder="Hoặc dán link file từ điển (.txt / .zip)" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button id="btn-dict-url" type="button">Tải</button>
+    </div>
+    <div id="loading" class="hint" hidden></div>
+    <h2>Đã nạp</h2>
+    <ul id="dict-list" class="dict-list"></ul>
+    <h2>Thêm nhanh</h2>
+    <div class="quick">
+      <input id="q-src" placeholder="Chữ gốc (vd: 天剑宗)" autocomplete="off">
+      <input id="q-vi" placeholder="Nghĩa (vd: Thiên Kiếm Tông)" autocomplete="off">
+      <button id="btn-quick" type="button">Lưu</button>
+    </div>
+    <div class="tip">Mục thêm nhanh có ưu tiên cao nhất và được giữ lại trong máy.</div>
+  </section>
+</main>
+
+<nav>
+  <button class="tabbtn on" data-tab="translate" type="button">Dịch</button>
+  <button class="tabbtn" data-tab="books" type="button">Truyện</button>
+  <button class="tabbtn" data-tab="dict" type="button">Từ điển</button>
+  <button class="tabbtn" data-tab="ai" type="button">AI</button>
+</nav>
+
+<div id="sheet" hidden>
+  <div class="sheet-body">
+    <div class="sheet-head">
+      <div id="sh-src" class="sh-src"></div>
+      <button id="sh-close" type="button" aria-label="Đóng">✕</button>
+    </div>
+    <div id="sh-kind" class="sh-kind"></div>
+    <div id="sh-hv" class="sh-hv"></div>
+    <div id="sh-alts" class="sh-alts"></div>
+    <div class="quick">
+      <input id="sh-input" placeholder="Nghĩa của bạn" autocomplete="off">
+      <button id="sh-save" type="button">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" hidden></div>
+<input id="file-text" type="file" accept=".txt,text/plain" hidden>
+<input id="file-book" type="file" accept=".txt,text/plain" hidden>
+<input id="file-dict" type="file" accept=".txt,.zip,text/plain,application/zip" multiple hidden>
+
+<script src="engine.js"></script>
+<script src="samples.js"></script>
+<script src="ai.js"></script>
+<script src="zip.js"></script>
+<script src="chapters.js"></script>
+<script src="webtext.js"></script>
+<script src="app.js"></script>
+<script src="books.js"></script>
+</body>
+</html>
