@@ -1,0 +1,2 @@
+# Luật nhân mẫu: {0}, {1} là từ bất kỳ. Thay bằng LuatNhan.txt của Quick Translator.
+{0}的{1}={1} của {0}

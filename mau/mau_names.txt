@@ -1,0 +1,3 @@
+# Tên riêng mẫu (gốc=nghĩa). Thay bằng Names.txt của Quick Translator để dịch thật.
+李寒=Lý Hàn
+天剑宗=Thiên Kiếm Tông
