@@ -1,0 +1,13 @@
+{
+  "appId": "com.truyendich.app",
+  "appName": "Truyện Dịch",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

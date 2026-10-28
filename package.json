@@ -1,0 +1,16 @@
+{
+  "name": "truyen-dich",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dịch truyện Trung/Anh sang Việt offline kiểu Quick Translator, có tối ưu bằng AI",
+  "scripts": {
+    "test": "node test/engine.test.js && node test/chapters.test.js && node test/zip.test.js"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/filesystem": "^6.0.2",
+    "@capacitor/share": "^6.0.3"
+  }
+}
